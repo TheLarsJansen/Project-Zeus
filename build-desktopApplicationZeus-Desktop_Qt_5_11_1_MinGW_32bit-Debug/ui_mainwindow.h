@@ -13,9 +13,11 @@
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QFrame>
 #include <QtWidgets/QLabel>
+#include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QToolBar>
+#include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -24,9 +26,19 @@ class Ui_MainWindow
 {
 public:
     QWidget *centralWidget;
-    QFrame *line;
     QLabel *label;
     QLabel *label_2;
+    QFrame *line;
+    QWidget *widget;
+    QVBoxLayout *verticalLayout_2;
+    QLineEdit *tempValueBox;
+    QLineEdit *lumiValueBox;
+    QLineEdit *humiValueBox;
+    QWidget *widget1;
+    QVBoxLayout *verticalLayout;
+    QLabel *label_3;
+    QLabel *label_5;
+    QLabel *label_4;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
 
@@ -37,11 +49,6 @@ public:
         MainWindow->resize(1020, 510);
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
-        line = new QFrame(centralWidget);
-        line->setObjectName(QStringLiteral("line"));
-        line->setGeometry(QRect(-3, 30, 1071, 16));
-        line->setFrameShape(QFrame::HLine);
-        line->setFrameShadow(QFrame::Sunken);
         label = new QLabel(centralWidget);
         label->setObjectName(QStringLiteral("label"));
         label->setGeometry(QRect(20, 10, 87, 19));
@@ -50,8 +57,59 @@ public:
         label->setFont(font);
         label_2 = new QLabel(centralWidget);
         label_2->setObjectName(QStringLiteral("label_2"));
-        label_2->setGeometry(QRect(750, 10, 220, 19));
+        label_2->setGeometry(QRect(770, 10, 220, 19));
         label_2->setFont(font);
+        line = new QFrame(centralWidget);
+        line->setObjectName(QStringLiteral("line"));
+        line->setGeometry(QRect(0, 15, 1031, 31));
+        line->setFrameShape(QFrame::HLine);
+        line->setFrameShadow(QFrame::Sunken);
+        widget = new QWidget(centralWidget);
+        widget->setObjectName(QStringLiteral("widget"));
+        widget->setGeometry(QRect(120, 40, 135, 91));
+        verticalLayout_2 = new QVBoxLayout(widget);
+        verticalLayout_2->setSpacing(6);
+        verticalLayout_2->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_2->setObjectName(QStringLiteral("verticalLayout_2"));
+        verticalLayout_2->setContentsMargins(0, 0, 0, 0);
+        tempValueBox = new QLineEdit(widget);
+        tempValueBox->setObjectName(QStringLiteral("tempValueBox"));
+
+        verticalLayout_2->addWidget(tempValueBox);
+
+        lumiValueBox = new QLineEdit(widget);
+        lumiValueBox->setObjectName(QStringLiteral("lumiValueBox"));
+
+        verticalLayout_2->addWidget(lumiValueBox);
+
+        humiValueBox = new QLineEdit(widget);
+        humiValueBox->setObjectName(QStringLiteral("humiValueBox"));
+
+        verticalLayout_2->addWidget(humiValueBox);
+
+        widget1 = new QWidget(centralWidget);
+        widget1->setObjectName(QStringLiteral("widget1"));
+        widget1->setGeometry(QRect(10, 40, 111, 91));
+        verticalLayout = new QVBoxLayout(widget1);
+        verticalLayout->setSpacing(6);
+        verticalLayout->setContentsMargins(11, 11, 11, 11);
+        verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
+        verticalLayout->setContentsMargins(0, 0, 0, 0);
+        label_3 = new QLabel(widget1);
+        label_3->setObjectName(QStringLiteral("label_3"));
+
+        verticalLayout->addWidget(label_3);
+
+        label_5 = new QLabel(widget1);
+        label_5->setObjectName(QStringLiteral("label_5"));
+
+        verticalLayout->addWidget(label_5);
+
+        label_4 = new QLabel(widget1);
+        label_4->setObjectName(QStringLiteral("label_4"));
+
+        verticalLayout->addWidget(label_4);
+
         MainWindow->setCentralWidget(centralWidget);
         mainToolBar = new QToolBar(MainWindow);
         mainToolBar->setObjectName(QStringLiteral("mainToolBar"));
@@ -70,6 +128,9 @@ public:
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", nullptr));
         label->setText(QApplication::translate("MainWindow", "Project Zeus", nullptr));
         label_2->setText(QApplication::translate("MainWindow", "Measurements Weather Station", nullptr));
+        label_3->setText(QApplication::translate("MainWindow", "Temperatur:", nullptr));
+        label_5->setText(QApplication::translate("MainWindow", "Luminous intensity:", nullptr));
+        label_4->setText(QApplication::translate("MainWindow", "Humidity:", nullptr));
     } // retranslateUi
 
 };

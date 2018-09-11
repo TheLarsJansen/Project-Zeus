@@ -2,9 +2,6 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "QtCharts.h"
-
-using namespace QtCharts;
 
 namespace Ui {
 class MainWindow;
