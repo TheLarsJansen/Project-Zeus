@@ -80,6 +80,12 @@ void StartDefaultTask(void const * argument);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
+	#include "stdio.h"
+	#include "string.h"
+	/* Buffer used for transmission and number of transmissions */
+	char aTxBuffer[1024];
+	int nbtime=1;
+
 
 /* USER CODE END 0 */
 
@@ -116,7 +122,10 @@ int main(void)
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 
-  /* USER CODE END 2 */
+  /* Start Timer event generation */
+   HAL_TIM_Base_Start_IT(&htim3);
+
+   /* USER CODE END 2 */
 
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
@@ -303,6 +312,11 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
+sprintf(aTxBuffer,"STM32CubeMX rocks %d times \t", ++nbtime);
+HAL_UART_Transmit(&huart2,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
+}
+
 /* USER CODE END 4 */
 
 /* StartDefaultTask function */
@@ -326,18 +340,19 @@ void StartDefaultTask(void const * argument)
   * @param  htim : TIM handle
   * @retval None
   */
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-  /* USER CODE BEGIN Callback 0 */
 
-  /* USER CODE END Callback 0 */
-  if (htim->Instance == TIM1) {
-    HAL_IncTick();
-  }
-  /* USER CODE BEGIN Callback 1 */
-
-  /* USER CODE END Callback 1 */
-}
+//void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+//{
+//  /* USER CODE BEGIN Callback 0 */
+//
+//  /* USER CODE END Callback 0 */
+//  if (htim->Instance == TIM1) {
+//    HAL_IncTick();
+//  }
+//  /* USER CODE BEGIN Callback 1 */
+//
+//  /* USER CODE END Callback 1 */
+//}
 
 /**
   * @brief  This function is executed in case of error occurrence.
