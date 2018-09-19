@@ -22,6 +22,7 @@ MainWindow::MainWindow(QWidget *parent) :
         qDebug() << err.text();
         qDebug() << "Database connection failed";
     }
+    // Test of het goede map is
 
     QSqlQuery MySQLqeury;
     MySQLqeury.exec("SELECT * FROM data\
