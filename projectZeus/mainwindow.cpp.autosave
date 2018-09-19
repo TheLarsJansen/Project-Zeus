@@ -35,12 +35,13 @@ MainWindow::MainWindow(QWidget *parent) :
         lightValue = MySQLqeury.value("light").toString();
         timeValue = MySQLqeury.value("date").toString();
     }
-
-    timeValue.chop(13);
+    
     // Visual part
     ui->tempValueBox->setText(tempValue);
     ui->lightValueBox->setText(lightValue);
     ui->humiValueBox->setText(humiValue);
+    
+    timeValue.chop(13);
     ui->timeValueBox->setText(timeValue);
 
 

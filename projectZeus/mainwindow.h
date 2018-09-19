@@ -8,11 +8,9 @@
 #include <iostream>
 #include <QDebug>
 
-#include <QtSql/QSql>
-#include <QtSql/QSqlDatabase>
-#include <QtSql/QSqlQuery>
-#include <QtSql/QSqlError>
-#include <QtSql/QSqlRecord>
+#include <QtSql>
+
+#include <QtCharts>
 
 
 namespace Ui {
@@ -34,6 +32,7 @@ private:
     QString humiValue;
     QString tempValue;
     QString lightValue;
+    QString timeValue;
 };
 
 #endif // MAINWINDOW_H
