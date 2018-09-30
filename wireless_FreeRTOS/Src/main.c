@@ -60,7 +60,8 @@ UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 
 osThreadId defaultTaskHandle;
-osThreadId SendSerialDataHandle;
+osThreadId TXSerialDataHandle;
+osThreadId RXSerialDataHandle;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
@@ -73,7 +74,8 @@ static void MX_GPIO_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_USART2_UART_Init(void);
 void StartDefaultTask(void const * argument);
-void SendSerial(void const * argument);
+void TXSerial(void const * argument);
+void RXSerial(void const * argument);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -83,9 +85,12 @@ void SendSerial(void const * argument);
 /* USER CODE BEGIN 0 */
 #include "stdio.h"
 #include "string.h"
+#include "mysql.h"
 /* Buffer used for transmission and number of transmissions */
-char aTxBuffer[1024];
-int telling=1;
+char aTxBuffer[128];
+char aRxBuffer[128];
+char ToTransmit[64];
+char ConnectDatabase[] = "AT+CIPSTART=\"TCP\",\"145.48.221.20\",80 \r \n";
 /* USER CODE END 0 */
 
 /**
@@ -120,7 +125,8 @@ int main(void)
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-
+  //	  sprintf(aTxBuffer, "test");	//argument contains the contents of ToTransmit and will be sent over UART
+ // 	HAL_UART_Transmit(&huart1,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
   /* USER CODE END 2 */
 
   /* USER CODE BEGIN RTOS_MUTEX */
@@ -132,8 +138,7 @@ int main(void)
   /* USER CODE END RTOS_SEMAPHORES */
 
   /* USER CODE BEGIN RTOS_TIMERS */
-  /* start timers, add new ones, ... */
-  osTimerStart(10, 1000);
+
   /* USER CODE END RTOS_TIMERS */
 
   /* Create the thread(s) */
@@ -141,9 +146,13 @@ int main(void)
   osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 256);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
-  /* definition and creation of SendSerialData */
-  osThreadDef(SendSerialData, SendSerial, osPriorityHigh, 0, 128);
-  SendSerialDataHandle = osThreadCreate(osThread(SendSerialData), NULL);
+  /* definition and creation of TXSerialData */
+  osThreadDef(TXSerialData, TXSerial, osPriorityHigh, 0, 128);
+  TXSerialDataHandle = osThreadCreate(osThread(TXSerialData), (void*) ToTransmit);
+
+  /* definition and creation of RXSerialData */
+  osThreadDef(RXSerialData, RXSerial, osPriorityIdle, 0, 128);
+  RXSerialDataHandle = osThreadCreate(osThread(RXSerialData), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -297,30 +306,50 @@ void StartDefaultTask(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+	strncpy(ToTransmit, ConnectDatabase, strlen(ConnectDatabase));	//Databaseconnection gets copied in ToTransmit
+	  //strncpy(aTxBuffer, aRxBuffer, strlen(aRxBuffer));
+	  osDelay(1);
   }
   /* USER CODE END 5 */ 
 }
 
-/* USER CODE BEGIN Header_SendSerial */
+/* USER CODE BEGIN Header_TXSerial */
 /**
-* @brief Function implementing the SendSerialData thread.
+* @brief Function implementing the TXSerialData thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_SendSerial */
-void SendSerial(void const * argument)
+/* USER CODE END Header_TXSerial */
+void TXSerial(void const * argument)
 {
-  /* USER CODE BEGIN SendSerial */
+  /* USER CODE BEGIN TXSerial */
   /* Infinite loop */
   for(;;)
   {
-	  sprintf(aTxBuffer,"Testcode %d \n", ++telling);
-	  HAL_UART_Transmit(&huart1,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
-
+	sprintf(aTxBuffer, argument);	//argument contains the contents of ToTransmit and will be sent over UART
+	HAL_UART_Transmit(&huart1,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
+    osDelay(1);
   }
+  /* USER CODE END TXSerial */
+}
 
-  /* USER CODE END SendSerial */
+/* USER CODE BEGIN Header_RXSerial */
+/**
+* @brief Function implementing the RXSerialData thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_RXSerial */
+void RXSerial(void const * argument)
+{
+  /* USER CODE BEGIN RXSerial */
+  /* Infinite loop */
+  for(;;)
+  {
+	HAL_UART_Receive(&huart1,(uint8_t *) aRxBuffer, strlen(aRxBuffer), 5000);
+    osDelay(1);
+  }
+  /* USER CODE END RXSerial */
 }
 
 /**
