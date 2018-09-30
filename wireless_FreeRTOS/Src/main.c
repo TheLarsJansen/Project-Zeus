@@ -61,7 +61,6 @@ UART_HandleTypeDef huart2;
 
 osThreadId defaultTaskHandle;
 osThreadId SendSerialDataHandle;
-osTimerId HertzTimerHandle;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
@@ -75,7 +74,6 @@ static void MX_USART1_UART_Init(void);
 static void MX_USART2_UART_Init(void);
 void StartDefaultTask(void const * argument);
 void SendSerial(void const * argument);
-void HertzCallback(void const * argument);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -132,11 +130,6 @@ int main(void)
   /* USER CODE BEGIN RTOS_SEMAPHORES */
   /* add semaphores, ... */
   /* USER CODE END RTOS_SEMAPHORES */
-
-  /* Create the timer(s) */
-  /* definition and creation of HertzTimer */
-  osTimerDef(HertzTimer, HertzCallback);
-  HertzTimerHandle = osTimerCreate(osTimer(HertzTimer), osTimerPeriodic, NULL);
 
   /* USER CODE BEGIN RTOS_TIMERS */
   /* start timers, add new ones, ... */
@@ -324,19 +317,10 @@ void SendSerial(void const * argument)
   {
 	  sprintf(aTxBuffer,"Testcode %d \n", ++telling);
 	  HAL_UART_Transmit(&huart1,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
-	  osDelay(1000);
+
   }
 
   /* USER CODE END SendSerial */
-}
-
-/* HertzCallback function */
-void HertzCallback(void const * argument)
-{
-  /* USER CODE BEGIN HertzCallback */
-	sprintf(aTxBuffer,"Testcode %d \n", ++telling);
-	HAL_UART_Transmit(&huart1,(uint8_t *) aTxBuffer, strlen(aTxBuffer), 5000);
-  /* USER CODE END HertzCallback */
 }
 
 /**
