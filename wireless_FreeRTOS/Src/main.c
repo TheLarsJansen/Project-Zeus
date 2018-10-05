@@ -90,6 +90,7 @@ char ToTransmit[128];
 char aTxBuffer[128] = { 0, };
 char aRxBuffer[128] = { 0, };
 char ConnectDatabase[] = "AT+CIPSTART=\"TCP\",\"145.48.221.20\",80 \r \n";
+int connected = 0;
 /* USER CODE END 0 */
 
 /**
@@ -278,33 +279,24 @@ static void MX_GPIO_Init(void) {
 
 /* USER CODE BEGIN 4 */
 
-void printS(char string[]){	//debug print over usb
+void printS(char string[]) {	//debug print over usb
 	HAL_UART_Transmit(&huart2, (uint8_t *) string, strlen(string), 100);
 }
 
 void Connect() {
 	void (*printSP)(char[]) = &printS;
-	//strncpy(aTxBuffer, "AT+CIPSTART=\"TCP\",\"145.48.221.20\",80", 128);
-	strncpy(aTxBuffer, "AT+CIPSTART=\"UDP\",\"192.168.77.1\",\"58337\"\r\n", 128);
+	for (int x = 0; x < 10; x++) {
+		strncpy(aTxBuffer, "AT+CIPSTART=\"TCP\",\"145.48.221.20\",80\r\n", 128);
+		HAL_UART_Transmit(&huart1, (uint8_t *) aTxBuffer, strlen(aTxBuffer),
+				100);
 
-	HAL_UART_Transmit(&huart1, (uint8_t *) aTxBuffer, strlen(aTxBuffer), 100);
-	(*printSP)(aTxBuffer);
-
-	HAL_UART_Receive(&huart1, (uint8_t *) aRxBuffer, 128, 1000);
-	(*printSP)(aRxBuffer);
-	osDelay(2000);
-
-	strncpy(aTxBuffer, "AT+CIPMODE=1\r\n", 128);
-
-	HAL_UART_Transmit(&huart1, (uint8_t *) aTxBuffer, strlen(aTxBuffer), 100);
-	(*printSP)(aTxBuffer);
-	HAL_UART_Receive(&huart1, (uint8_t *) aRxBuffer, 128, 1000);
-	(*printSP)(aRxBuffer);
-
-	osDelay(1000);
-	//osDelay(1000);
+		strncpy(aTxBuffer, "AT+CIPMODE=1\r\n", 128);
+		HAL_UART_Transmit(&huart1, (uint8_t *) aTxBuffer, strlen(aTxBuffer),
+				100);
+		osDelay(1000);
+	}
+	connected = 1;
 }
-
 
 /* USER CODE END 4 */
 
@@ -321,28 +313,9 @@ void StartDefaultTask(void const * argument) {
 	/* Infinite loop */
 	void (*printSP)(char[]) = &printS;
 	for (;;) {
-		//Connect();
-		strncpy(aTxBuffer, "AT\r\n", 128);
-		HAL_UART_Transmit(&huart1, (uint8_t *) aTxBuffer, strlen(aTxBuffer), 100);
-		//(*printSP)("AT\r\n");
-		HAL_UART_Receive(&huart1, (uint8_t *) aRxBuffer, 128, 1000);
-		(*printSP)(aRxBuffer);
-		//osDelay(100);
-		//char * aRxBufferPtr = aRxBuffer;
-		//aRxBufferPtr = strrchr(aRxBuffer, '\n');
-		//aRxBufferPtr = '\0';
-		//strncpy(ToTransmit, aRxBuffer, 128);
-		//strncpy(ToTransmit, ConnectDatabase, strlen(ConnectDatabase));	//Databaseconnection gets copied in ToTransmit
-
-//		if (strcmp(aTxBuffer, ToTransmit) != 0) {
-//			strncpy(aTxBuffer, ToTransmit, 128);
-//			HAL_UART_Transmit(&huart1, (uint8_t *) aTxBuffer, strlen(aTxBuffer),
-//					1000);
-		//HAL_UART_Transmit(&huart1, (uint8_t *) aTxBuffer, strlen(aTxBuffer),
-		//				100);
-		//memset(&aRxBuffer, '\0', 128);
-//		}
-		osDelay(500);
+		if (connected == 0) {
+			Connect();
+		}
 	}
 	/* USER CODE END 5 */
 }
