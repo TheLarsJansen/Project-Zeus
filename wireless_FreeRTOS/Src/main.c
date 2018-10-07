@@ -51,7 +51,10 @@
 #include "cmsis_os.h"
 
 /* USER CODE BEGIN Includes */
-
+#include <ESP8266WiFi.h>
+#include <WiFiClient.h>
+#include <MySQL_Connection.h>
+#include <MySQL_Cursor.h>
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -91,6 +94,9 @@ char aTxBuffer[128] = { 0, };
 char aRxBuffer[128] = { 0, };
 char ConnectDatabase[] = "AT+CIPSTART=\"TCP\",\"145.48.221.20\",80 \r \n";
 int connected = 0;
+int temp = 24;
+int hum = 55;
+int light = 300;
 /* USER CODE END 0 */
 
 /**
@@ -284,18 +290,22 @@ void printS(char string[]) {	//debug print over usb
 }
 
 void Connect() {
-	void (*printSP)(char[]) = &printS;
-	for (int x = 0; x < 10; x++) {
+	for (int x = 0; x < 15; x++) {
 		strncpy(aTxBuffer, "AT+CIPSTART=\"TCP\",\"145.48.221.20\",80\r\n", 128);
-		HAL_UART_Transmit(&huart1, (uint8_t *) aTxBuffer, strlen(aTxBuffer),
-				100);
-
-		strncpy(aTxBuffer, "AT+CIPMODE=1\r\n", 128);
-		HAL_UART_Transmit(&huart1, (uint8_t *) aTxBuffer, strlen(aTxBuffer),
-				100);
+		SendPacket();
+		if (x == 14) {
+			strncpy(aTxBuffer, "AT+CIPMODE=1\r\n", 128);
+			SendPacket();
+		}
 		osDelay(1000);
 	}
 	connected = 1;
+}
+
+void SendPacket() {
+	void (*printSP)(char[]) = &printS;
+	HAL_UART_Transmit(&huart1, (uint8_t *) aTxBuffer, strlen(aTxBuffer), 100);
+	(*printSP)(aTxBuffer);
 }
 
 /* USER CODE END 4 */
@@ -315,7 +325,10 @@ void StartDefaultTask(void const * argument) {
 	for (;;) {
 		if (connected == 0) {
 			Connect();
+			(*printSP)("Connected to server");
 		}
+		mysql_connect('localhost', 'username', 'password');
+
 	}
 	/* USER CODE END 5 */
 }
