@@ -1,7 +1,7 @@
 #MicroXplorer Configuration settings - do not modify
 FREERTOS.FootprintOK=true
 FREERTOS.IPParameters=Tasks01,FootprintOK,configUSE_TIMERS,configMINIMAL_STACK_SIZE,configTOTAL_HEAP_SIZE,configGENERATE_RUN_TIME_STATS,configUSE_TRACE_FACILITY,configTIMER_TASK_PRIORITY
-FREERTOS.Tasks01=defaultTask,0,256,StartDefaultTask,Default,NULL,Dynamic,NULL,NULL;TXSerialData,2,128,TXSerial,Default,ToTransmit,Dynamic,NULL,NULL;RXSerialData,-3,128,RXSerial,Default,NULL,Dynamic,NULL,NULL
+FREERTOS.Tasks01=defaultTask,0,256,StartDefaultTask,Default,NULL,Dynamic,NULL,NULL
 FREERTOS.configGENERATE_RUN_TIME_STATS=1
 FREERTOS.configMINIMAL_STACK_SIZE=128
 FREERTOS.configTIMER_TASK_PRIORITY=1

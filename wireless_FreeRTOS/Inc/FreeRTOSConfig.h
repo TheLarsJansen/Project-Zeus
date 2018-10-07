@@ -112,8 +112,6 @@
 #define configUSE_16_BIT_TICKS                   0
 #define configUSE_MUTEXES                        1
 #define configQUEUE_REGISTRY_SIZE                8
-#define configUSE_TRACE_FACILITY				 1
-#define configRECORD_STACK_HIGH_ADDRESS 		 1
 
 /* Co-routine definitions. */
 #define configUSE_CO_ROUTINES                    0
