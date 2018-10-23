@@ -88,17 +88,12 @@ char ToTransmit[128];
 char aTxBuffer[128] = { 0, };
 char aRxBuffer[128] = { 0, };
 char ConnectDatabase[] = "AT+CIPSTART=\"TCP\",\"145.48.221.20\",80 \r \n";
-static char *host = "145.48.221.20";
-static char *user = "ljphjans";
-static char *password = "Ab12345";
-static char *dbname = "ljphjans_db";
 unsigned int port = 3306;
-static char *unix_socket = NULL;
 unsigned int flag = 0;
 int connected = 0;
-int temp = 24;
-int hum = 55;
-int light = 300;
+int temp = 25;
+int humi = 55;
+int light = 255;
 /* USER CODE END 0 */
 
 /**
@@ -288,25 +283,30 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 
-void printS(char string[]) {	//debug print over usb
+void printS(char string[]) {		//This function prints the string over the STM's debugging serial
 	HAL_UART_Transmit(&huart2, (uint8_t *) string, strlen(string), 100);
 }
 
-void SendPacket() {
+void SendPacket() {					//This function transmits the data inside aTxBuffer to the uart1 (esp8266)
 	void (*printSP)(char[]) = &printS;
-	HAL_UART_Transmit(&huart1, (uint8_t *) aTxBuffer, strlen(aTxBuffer), 100);
+	HAL_UART_Transmit(&huart1, (uint8_t *) aTxBuffer, strlen(aTxBuffer), 1000);
 	(*printSP)(aTxBuffer);
 }
 
-void Connect(int times) {
+void ReceivePacket(){				//This function stores the received data into the aRxBuffer
+	void (*printSP)(char[]) = &printS;
+	HAL_UART_Receive(&huart1, (uint8_t *) aRxBuffer, strlen(aRxBuffer), 1000);
+	(*printSP)(aRxBuffer);
+}
+void Connect(int times) {			//This function connects to the webserver hosting the PHP script and puts the ESP8266 in CIPSEND mode
 	for (int x = 0; x < times; x++) {
-		//strncpy(aTxBuffer, "AT+CIPSTART=\"TCP\",\"145.48.221.20\",80\r\n", 128);
-		strncpy(aTxBuffer, "AT+CIPSTART=\"UDP\",\"192.168.137.1\",3306\r\n", 128);
+		strncpy(aTxBuffer, "AT+CIPSTART=\"TCP\",\"145.48.221.12\",80\r\n", 128);
 		SendPacket();
+		ReceivePacket();
 		if (x == (times - 1)) {
 			strncpy(aTxBuffer, "AT+CIPMODE=1\r\n", 128);
 			SendPacket();
-			strncpy(aTxBuffer, "AT+CIPSTA?\r\n", 128);
+			strncpy(aTxBuffer, "AT+CIPSEND\r\n", 128);
 			SendPacket();
 		}
 		osDelay(1000);
@@ -314,17 +314,12 @@ void Connect(int times) {
 	connected = 1;
 }
 
-void ConnectDB() {
-	MYSQL *conn;
-	conn = mysql_init(NULL);
-
-	if (!(mysql_real_connect(conn, host, user, password, dbname, port,
-			unix_socket, flag))) {
-		char string[64];
-		strncpy(string, mysql_error(conn), 64);
-		HAL_UART_Transmit(&huart2, (uint8_t *) string, strlen(string), 64);
-	}
-	connected = 2;
+void SendValues() {					//this function transmits the values in the temp, humi and light parameters in the HTTP GET format
+	snprintf (aTxBuffer, 256, "GET /ENG/mjosephs/?temp=%d&humi=%d&light=%d HTTP/1.1"
+			"Host: student.aii.avans.nl\r\n", temp, humi, light);
+	SendPacket();
+	osDelay(5000);
+	//connected = 2;
 }
 /* USER CODE END 4 */
 
@@ -344,12 +339,11 @@ void StartDefaultTask(void const * argument)
 	for (;;) {
 		switch (connected) {
 		case 0:
-			Connect(3);
+			Connect(10);
 			(*printSP)("Connected to server");
 			break;
 		case 1:
-			ConnectDB();
-			(*printSP)("Connected to database");
+			SendValues();
 			break;
 		default:
 			break;
