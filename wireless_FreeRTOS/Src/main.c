@@ -97,10 +97,14 @@ char ConnectDatabase[] = "AT+CIPSTART=\"TCP\",\"145.48.221.20\",80 \r \n";
 unsigned int port = 3306;
 unsigned int flag = 0;
 int connected = 0;
-int temp = 25;
-int humi = 55;
-int light = 255;
+int temp = 0;
+int humi = 0;
+int light = 0;
 int x;
+uint8_t buffer_RH, buffer_Temp;
+int RH_out, RH;
+int Temp_out, Temp;
+uint32_t ADCValue;
 /* USER CODE END 0 */
 
 /**
@@ -368,6 +372,50 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void receiveData(uint8_t* dataBuffer, uint8_t temp) {
+
+	HAL_I2C_Master_Transmit(&hi2c1, 0x40<<1, &temp, 1, 100);
+
+	HAL_I2C_Master_Receive(&hi2c1, 0x40<<1, dataBuffer, 1, 100);
+}
+
+int receiveI2CTemp() {
+
+	receiveData(&buffer_Temp, 0xE0);
+
+	buffer_Temp -= 78;
+
+	Temp = buffer_Temp;
+
+	return Temp;
+}
+
+int receiveI2CHum() {
+
+	receiveData(&buffer_RH, 0xE5);
+	buffer_RH /= 2;
+	RH = buffer_RH - 6;
+
+	return RH;
+}
+
+int getLightValue() {
+
+	 ADCValue = HAL_ADC_GetValue(&hadc);
+
+	 return ADCValue / 10;
+}
+
+void measurements() {
+	HAL_ADC_Start(&hadc);
+
+	    light = getLightValue();
+		humi = receiveI2CHum();
+		temp = receiveI2CTemp();
+
+	    osDelay(1000);
+	    HAL_ADC_Stop(&hadc);
+}
 
 void printS(char string[]) {		//This function prints the string over the STM's debugging serial
 	HAL_UART_Transmit(&huart2, (uint8_t *) string, strlen(string), 100);
@@ -403,7 +451,6 @@ void Connect(int times) {			//This function connects to the webserver hosting th
 void SendValues() {					//this function transmits the values in the temp, humi and light parameters in the HTTP GET format
 	snprintf (aTxBuffer, 256, "GET /ENG/mjosephs/?temp=%d&humi=%d&light=%d HTTP/1.1\r\nHost: student.aii.avans.nl\r\n\r\n", temp, humi, light);
 	SendPacket();
-	osDelay(5000);
 	//connected = 2;
 }
 /* USER CODE END 4 */
@@ -424,15 +471,13 @@ void StartDefaultTask(void const * argument)
 	for (;;) {
 		switch (connected) {
 		case 0:
-			Connect(10);
+			Connect(5);
 			(*printSP)("Connected to server");
 			break;
 		case 1:
+			measurements();
 			SendValues();
-			x++;
-			temp = x;
-			humi = x;
-			light = (6*x);
+			osDelay(30000);
 			ReceivePacket();
 			break;
 		default:
