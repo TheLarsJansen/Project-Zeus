@@ -8,6 +8,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     // Data retrieve part
+    // Database connection
     QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
     db.setHostName("databases.aii.avans.nl");
     db.setPort(3306);
@@ -29,6 +30,7 @@ MainWindow::MainWindow(QWidget *parent) :
     MySQLqeury.exec("SELECT * FROM data\
                      WHERE id = (SELECT MAX(id) FROM data);");
 
+    // Request currentWeather tab values
     while(MySQLqeury.next()){
         tempValue = MySQLqeury.value("temp").toString();
         humiValue = MySQLqeury.value("humi").toString();
@@ -36,11 +38,15 @@ MainWindow::MainWindow(QWidget *parent) :
         timeValue = MySQLqeury.value("date").toString();
     }
 
-    timeValue.chop(13);
     // Visual part
-    ui->tempValueBox->setText(tempValue);
-    ui->lightValueBox->setText(lightValue);
-    ui->humiValueBox->setText(humiValue);
+
+
+    //Set currentWeather tab Values
+    ui->tempValueBox->setText(tempValue + " C");
+    ui->lightValueBox->setText(lightValue + " Lumen");
+    ui->humiValueBox->setText(humiValue + " %");
+
+    timeValue.chop(13);
     ui->timeValueBox->setText(timeValue);
 
 
@@ -50,4 +56,30 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::on_refreshButton_pressed()
+{
+    QSqlQuery MySQLqeury;
+    MySQLqeury.exec("SELECT * FROM data\
+                     WHERE id = (SELECT MAX(id) FROM data);");
+
+    // Request currentWeather tab values
+    while(MySQLqeury.next()){
+        tempValue = MySQLqeury.value("temp").toString();
+        humiValue = MySQLqeury.value("humi").toString();
+        lightValue = MySQLqeury.value("light").toString();
+        timeValue = MySQLqeury.value("date").toString();
+    }
+
+    // Visual part
+
+
+    //Set currentWeather tab Values
+    ui->tempValueBox->setText(tempValue);
+    ui->lightValueBox->setText(lightValue);
+    ui->humiValueBox->setText(humiValue);
+
+    timeValue.chop(13);
+    ui->timeValueBox->setText(timeValue);
 }

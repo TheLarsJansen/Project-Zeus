@@ -26,8 +26,13 @@ public:
     ~MainWindow();
 
 
+private slots:
+    void on_refreshButton_pressed();
+
 private:
     Ui::MainWindow *ui;
+
+    QTabWidget *tabWidget;
 
     QString humiValue;
     QString tempValue;

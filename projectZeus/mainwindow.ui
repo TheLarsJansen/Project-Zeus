@@ -50,104 +50,78 @@
      <string>Weather Station</string>
     </property>
    </widget>
-   <widget class="QTabWidget" name="tabWidget">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>40</y>
-      <width>560</width>
-      <height>380</height>
+      <x>20</x>
+      <y>50</y>
+      <width>231</width>
+      <height>131</height>
      </rect>
     </property>
-    <property name="currentIndex">
-     <number>0</number>
-    </property>
-    <property name="documentMode">
-     <bool>false</bool>
-    </property>
-    <property name="tabsClosable">
-     <bool>false</bool>
-    </property>
-    <widget class="QWidget" name="currentWeatherTab">
-     <attribute name="title">
-      <string>Current Weather</string>
-     </attribute>
-     <widget class="QWidget" name="layoutWidget">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>10</y>
-        <width>192</width>
-        <height>102</height>
-       </rect>
-      </property>
-      <layout class="QHBoxLayout" name="horizontalLayout">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <layout class="QVBoxLayout" name="verticalLayout">
-         <item>
-          <widget class="QLabel" name="label_3">
-           <property name="text">
-            <string>Temperature</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_4">
-           <property name="text">
-            <string>Humidity</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_5">
-           <property name="text">
-            <string>Luminousity</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_6">
-           <property name="text">
-            <string>Time</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>Temperature</string>
+         </property>
+        </widget>
        </item>
        <item>
-        <layout class="QVBoxLayout" name="verticalLayout_2">
-         <item>
-          <widget class="QLineEdit" name="tempValueBox"/>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="humiValueBox"/>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="lightValueBox"/>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="timeValueBox"/>
-         </item>
-        </layout>
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>Humidity</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>Luminousity</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>Time</string>
+         </property>
+        </widget>
        </item>
       </layout>
-     </widget>
-    </widget>
-    <widget class="QWidget" name="tempGraphTab">
-     <attribute name="title">
-      <string>Temperature</string>
-     </attribute>
-    </widget>
-    <widget class="QWidget" name="humiGraphTab">
-     <attribute name="title">
-      <string>Humidity</string>
-     </attribute>
-    </widget>
-    <widget class="QWidget" name="lightGraphTab">
-     <attribute name="title">
-      <string>Light intensity</string>
-     </attribute>
-    </widget>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QLineEdit" name="tempValueBox"/>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="humiValueBox"/>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lightValueBox"/>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="timeValueBox"/>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QPushButton" name="refreshButton">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>190</y>
+      <width>231</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Refresh data</string>
+    </property>
    </widget>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
